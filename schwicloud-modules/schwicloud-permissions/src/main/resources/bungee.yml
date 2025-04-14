@@ -1,0 +1,6 @@
+main: eu.schwicloud.bungee.BungeeBootstrap
+version: 1.1.0-RELEASE
+author: RauchigesEtwas
+name: metacloud-permissions
+
+depend: ["metacloud-api", "metacloud-plugin"]

@@ -4,18 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.metacloudservice</groupId>
-    <artifactId>MetacloudService</artifactId>
+    <groupId>eu.schwicloud</groupId>
+    <artifactId>SchwiCloud</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <modules>
-        <module>metacloud-driver</module>
-        <module>metacloud-launcher</module>
-        <module>metacloud-networking</module>
-        <module>metacloud-plugin</module>
-        <module>metacloud-api</module>
-        <module>metacloud-modules</module>
-        <module>metacloud-runnable</module>
+        <module>schwicloud-driver</module>
+        <module>schwicloud-launcher</module>
+        <module>schwicloud-networking</module>
+        <module>schwicloud-plugin</module>
+        <module>schwicloud-api</module>
+        <module>schwicloud-modules</module>
+        <module>schwicloud-runnable</module>
     </modules>
 
     <properties>

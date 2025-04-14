@@ -1,0 +1,70 @@
+package eu.schwicloud.moduleside;
+
+
+import eu.schwicloud.Driver;
+import eu.schwicloud.api.CloudPermissionAPI;
+import eu.schwicloud.configuration.ConfigDriver;
+import eu.schwicloud.module.extention.IModule;
+import eu.schwicloud.moduleside.commands.PermissionCommand;
+import eu.schwicloud.moduleside.config.Configuration;
+import eu.schwicloud.moduleside.config.IncludedAble;
+import eu.schwicloud.moduleside.config.PermissionAble;
+import eu.schwicloud.moduleside.config.PermissionGroup;
+import eu.schwicloud.moduleside.config.migrate.MigrationConfiguration;
+import eu.schwicloud.moduleside.events.CloudEvents;
+import eu.schwicloud.webserver.entry.RouteEntry;
+
+import java.io.File;
+import java.util.ArrayList;
+
+public class MetaModule implements IModule {
+
+
+    public static MetaModule instance;
+
+    @Override
+    public void load() {
+        instance = this;
+        if (!new File("./modules/permissions/config.json").exists()){
+            new File("./modules/permissions/").mkdirs();
+
+            ArrayList<PermissionGroup> groups = new ArrayList<>();
+            ArrayList<PermissionAble> permission = new ArrayList<>();
+            ArrayList<IncludedAble> includedAbles = new ArrayList<>();
+
+            permission.add(new PermissionAble("*", true, "LIFETIME"));
+            includedAbles.add(new IncludedAble("member", "LIFETIME"));
+
+            groups.add(new PermissionGroup("admin", false, 0,"§cAdmin §8| §7", "","", "", permission, includedAbles));
+            groups.add(new PermissionGroup("member", true, 99,"§eMember §8| §7", "", "", "", new ArrayList<>(), new ArrayList<>()));
+
+            Configuration config = new Configuration(groups,  new ArrayList<>());
+            new ConfigDriver("./modules/permissions/config.json").save(config);
+        }else if (!new ConfigDriver("./modules/permissions/config.json").canBeRead(Configuration.class)){
+            ArrayList<PermissionGroup> groups = new ArrayList<>();
+            MigrationConfiguration mc = (MigrationConfiguration) new ConfigDriver("./modules/permissions/config.json").read(MigrationConfiguration.class);
+            mc.getGroups().forEach(mp -> groups.add(new PermissionGroup(mp.getGroup(), mp.getIsDefault(), mp.getTagPower(), mp.getPrefix(), mp.getSuffix(), "", "", mp.getPermissions(), mp.getIncluded())));
+            Configuration configuration = new Configuration(groups, mc.getPlayers());
+            new File("./modules/permissions/config.json").deleteOnExit();
+            new ConfigDriver("./modules/permissions/config.json").save(configuration);
+        }
+
+
+        new CloudPermissionAPI();
+        Driver.getInstance().getTerminalDriver().getCommandDriver().registerCommand(new PermissionCommand());
+        Driver.getInstance().getMessageStorage().eventDriver.registerListener(new CloudEvents());
+
+        Driver.getInstance().getWebServer().addRoute(new RouteEntry("/module/permission/configuration", new ConfigDriver().convert(new ConfigDriver("./modules/permissions/config.json").read(Configuration.class)) ));
+
+    }
+
+    @Override
+    public void unload() {
+
+    }
+
+    @Override
+    public void reload() {
+        Driver.getInstance().getWebServer().updateRoute("/module/permission/configuration", new ConfigDriver().convert(new ConfigDriver("./modules/permissions/config.json").read(Configuration.class)));
+    }
+}

@@ -1,0 +1,17 @@
+package eu.schwicloud.bootstrap.velocity.networking;
+
+import eu.schwicloud.bootstrap.velocity.VelocityBootstrap;
+import eu.schwicloud.networking.packet.packets.out.service.playerbased.apibased.PacketOutAPIPlayerConnect;
+import io.netty.channel.Channel;
+import eu.schwicloud.networking.packet.NettyAdaptor;
+import eu.schwicloud.networking.packet.Packet;
+public class HandlePacketOutAPIPlayerConnect implements NettyAdaptor {
+    @Override
+    public void handle(Channel channel, Packet packet) {
+        if (packet instanceof PacketOutAPIPlayerConnect) {
+            if (VelocityBootstrap.proxyServer.getPlayer(((PacketOutAPIPlayerConnect) packet).getUsername()).isPresent()){
+              VelocityBootstrap.proxyServer.getPlayer(((PacketOutAPIPlayerConnect) packet).getUsername()).get().createConnectionRequest(VelocityBootstrap.proxyServer.getServer(((PacketOutAPIPlayerConnect) packet).getService()).get()).connect();
+            }
+        }
+    }
+}
